@@ -18,30 +18,30 @@ const int DELTA_INVERSE[4]={1, 0, 3, 2};
 
 struct Point_t
 {
-	int x,y;
-	Point_t(){}
-	Point_t(int _x, int _y):x(_x), y(_y){}
-	bool operator==(const Point_t& t) const{
-		return x==t.x && y==t.y;
-	}
-	bool equals(const int _x, const int _y) const{
-		return x==_x && y==_y;
-	}
-	bool OutOfBounds() const{
-		return x<0 || y<0 || x>MAP_WIDTH || y>MAP_HEIGHT;
-	}
+    int x,y;
+    Point_t(){}
+    Point_t(int _x, int _y):x(_x), y(_y){}
+    bool operator==(const Point_t& t) const{
+        return x==t.x && y==t.y;
+    }
+    bool equals(const int _x, const int _y) const{
+        return x==_x && y==_y;
+    }
+    bool OutOfBounds() const{
+        return x<0 || y<0 || x>MAP_WIDTH || y>MAP_HEIGHT;
+    }
 };
 struct BotsInfo_t
 {
-	Point_t pos[NUM_PLAYERS];
-	Point_t last_pos[NUM_PLAYERS];
-	int status[NUM_PLAYERS];
-	int trapped[NUM_PLAYERS];
-	int scoredecline[NUM_PLAYERS];
+    Point_t pos[NUM_PLAYERS];
+    Point_t last_pos[NUM_PLAYERS];
+    int status[NUM_PLAYERS];
+    int trapped[NUM_PLAYERS];
+    int scoredecline[NUM_PLAYERS];
 };
 struct Trap_t
 {
-	int x,y,left;
+    int x,y,left;
 };
 
 const BotsInfo_t& get_bots_info();
