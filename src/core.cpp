@@ -1,4 +1,5 @@
 #include <cstdio>
+#include <cassert>
 #include <vector>
 
 //根据目标位置取得下一步的方向
@@ -12,6 +13,7 @@ int calc_next_step(const Point_t &dest,
 
     //从目标位置反向寻找一条距离递减的路径
     while(distance[x][y]){
+        std::vector<std::pair<Point_t,int> > acceptable;
         for(int i=0; i<4; i++){
             int tx = x+DELTA[i][0];
             int ty = y+DELTA[i][1];
@@ -26,18 +28,24 @@ int calc_next_step(const Point_t &dest,
             int owner = getEdgeOwner(Point_t(x,y), t);
             if(owner!=LAND_NO_OWNER && owner!=player)
                 continue;
-
             if(distance[tx][ty] < distance[x][y]){
-                fprintf(stderr, "%s: from (%d,%d)to(%d,%d)\n", __func__,
-                    x, y, tx, ty);
-                if(!distance[tx][ty]){
-                    ret = DELTA_NAME[DELTA_INVERSE[i]];
-                }
-                x = tx;
-                y = ty;
-                break;
+                acceptable.push_back(std::make_pair(t, DELTA_NAME[DELTA_INVERSE[i]]));
             }
         }
+        if(acceptable.empty()){
+            fprintf(stderr, "%s\n", "no way to go");
+            assert(0);
+        }
+        //随机选择一条可行路径
+        const std::pair<Point_t,int> &Pair = acceptable[rand() % acceptable.size()];
+        const Point_t &pt = Pair.first;
+        fprintf(stderr, "%s: from (%d,%d) to (%d,%d)\n", __func__,
+            x, y, pt.x, pt.y);
+        if(!distance[pt.x][pt.y]){
+            ret = Pair.second;
+        }
+        x = pt.x;
+        y = pt.y;
     }
     return ret;
 }
