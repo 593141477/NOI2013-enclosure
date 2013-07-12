@@ -63,4 +63,5 @@ int ClockwiseTurn(int dir);
 int AntiClockwiseTurn(int dir);
 Point_t getNextPoint(const Point_t &st, int Dir);
 bool canGoInto(const Point_t &pos, int Dir);
-bool inDangerNow(int me, const Point_t &start);
+bool inDangerNow(const Point_t &start);
+Point_t chooseEscDest(int esc_dist[MAP_WIDTH+1][MAP_HEIGHT+1]);

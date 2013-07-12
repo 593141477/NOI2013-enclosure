@@ -105,7 +105,7 @@ int main()
                         step_count = 0;
                     if(onTheTrack(getNextPoint(MyPosNow, output_dir), MyBotId)) {
                         state = STATE_FIND_LAND;
-                    }else if(inDangerNow(MyBotId, startPoint)){
+                    }else if(inDangerNow(startPoint)){
                         fprintf(stderr, "%s\n", "start escaping...");
                         state = STATE_ESCAPE;
                     }
@@ -146,7 +146,7 @@ int main()
                 case STATE_ESCAPE:
                 {
                     int esc_dist[MAP_WIDTH+1][MAP_HEIGHT+1];
-                    Point_t dest = chooseEscDest(esc_dist, MyBotId);
+                    Point_t dest = chooseEscDest(esc_dist);
                     fprintf(stderr, "escaping dest: (%d,%d)\n", dest.x, dest.y);
                     output_dir = calc_next_step(dest, esc_dist, MyBotId, lastPoint);
 

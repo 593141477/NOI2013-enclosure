@@ -76,15 +76,13 @@ bool canGoInto(const Point_t &pos, int Dir)
     int o = getEdgeOwner(pos, next);
     return (o==LAND_NO_OWNER);
 }
-int NearestEnemyDist(int me)
+int NearestEnemyDist(const BotsInfo_t& bots, const std::vector<Point_t> &track )
 {
-    const BotsInfo_t& bots = get_bots_info();
-    const std::vector<Point_t> track = getTrack(me);
     int dist[MAP_WIDTH+1][MAP_HEIGHT+1];
     int shortest = 0x2f2f2f2f;
     for(int i=0; i<NUM_PLAYERS; i++)
     {
-        if(bots.status[i]==BOT_DEAD || i==me)
+        if(bots.status[i]==BOT_DEAD || i==bots.MyID)
             continue;
         //得到其他bot攻击到我的距离(处于落笔态的不能穿越自己的区域)
         BfsSearch(bots.pos[i].x, bots.pos[i].y,
@@ -97,30 +95,32 @@ int NearestEnemyDist(int me)
     }
     return shortest;
 }
-bool inDangerNow(int me, const Point_t &start)
+bool inDangerNow(const Point_t &start)
 {
+    const BotsInfo_t& bots = get_bots_info();
     int dist[MAP_WIDTH+1][MAP_HEIGHT+1];
-    const std::vector<Point_t> track = getTrack(me);
+    const std::vector<Point_t> &track = getTrack(bots.MyID);
     int length = track.size();
 
     if(length < 2) /* shouldn't be that */
         return false;
     BfsSearch(track[length-1].x, track[length-1].y,
             LAND_NO_OWNER, dist, track[length-2]);
-    int nearest = NearestEnemyDist(me);
+    int nearest = NearestEnemyDist(bots, track);
     int remaining = dist[start.x][start.y];
 
     fprintf(stderr, "%s: nearest=%d remaining=%d\n", __func__, nearest, remaining);
 
     return nearest < remaining;
 }
-Point_t chooseEscDest(int esc_dist[MAP_WIDTH+1][MAP_HEIGHT+1], int me)
+Point_t chooseEscDest(int esc_dist[MAP_WIDTH+1][MAP_HEIGHT+1])
 {
-    const std::vector<Point_t> track = getTrack(me);
+    const BotsInfo_t& bots = get_bots_info();
+    const std::vector<Point_t> &track = getTrack(bots.MyID);
     int length = track.size();
     BfsSearch(track[length-1].x, track[length-1].y,
             LAND_NO_OWNER, esc_dist, track[length-2]);
-    int nearest = NearestEnemyDist(me);
+    int nearest = NearestEnemyDist(bots, track);
 
     Point_t ret = track[0];
     int shortest = 0x2f2f2f2f;
