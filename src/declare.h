@@ -38,6 +38,7 @@ struct BotsInfo_t
     int status[NUM_PLAYERS];
     int trapped[NUM_PLAYERS];
     int scoredecline[NUM_PLAYERS];
+    int MyID;
 };
 struct Trap_t
 {

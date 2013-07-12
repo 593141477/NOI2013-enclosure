@@ -60,6 +60,8 @@ int main()
     init_program(MyBotId);
     output_init_pos();
 
+    Bots.MyID = MyBotId;
+
     for(Round=1; Round<=100; Round++) {
         char output_dir;
         int output_action;
