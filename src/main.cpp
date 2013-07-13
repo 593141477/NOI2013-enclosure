@@ -131,9 +131,12 @@ int main()
 
                 case STATE_FIND_LAND:
                 {
-                    std::pair<Point_t,int> Pair;
-                    Pair = find_nearest_blank(distance);
-                    Point_t p = Pair.first;
+                    int corner, blank_size;
+                    Point_t p = find_nearest_blank(distance, corner, blank_size);
+                    if(blank_size < 4){
+                        int largest = getLargestBlankSize();
+                        p = find_nearest_blank(distance, corner, blank_size, largest);
+                    }
                     if(p == MyPosNow){
                         int nearest = 0x2f2f2f2f;
                         for(int i=0; i<NUM_PLAYERS; i++){
@@ -146,7 +149,7 @@ int main()
                             break;
                         }
                         //根据起点位置确定顺时针转的起始方向
-                        switch(Pair.second){
+                        switch(corner){
                             case UL_CORNER:
                                 output_dir = DIR_RIGHT;
                                 break;

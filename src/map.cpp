@@ -11,6 +11,9 @@ int LandOwner[MAP_WIDTH][MAP_HEIGHT];
 int LandID[MAP_WIDTH][MAP_HEIGHT];
 int totalEnclosure;
 
+
+int BlankSize[MAP_WIDTH][MAP_HEIGHT];
+
 //所有格点之间的最短路
 // int Graph[MAX_VERTICES][MAX_VERTICES+7 /*128*/];
 // #define COORD2VERT(x,y) ((x)*(MAP_WIDTH+1)+(y))
@@ -139,14 +142,14 @@ bool inline smaller_and_update(int &a, const int b)
     return false;
 }
 
-std::pair<Point_t,int> find_nearest_blank(const int distance[MAP_WIDTH+1][MAP_HEIGHT+1])
+Point_t find_nearest_blank(const int distance[MAP_WIDTH+1][MAP_HEIGHT+1], int &ret_cor, int &ret_size, int min_size)
 {
     int best = 0x2f2f2f2f;
     Point_t p(0, 0);
     int corner = UL_CORNER;
     for(int i=0; i<MAP_WIDTH; i++)
         for(int j=0; j<MAP_HEIGHT; j++) {
-            if(LandOwner[i][j] == LAND_NO_OWNER){
+            if(LandOwner[i][j]==LAND_NO_OWNER && BlankSize[i][j]>=min_size){
                 if(smaller_and_update(best,distance[i][j])){ //upper left corner
                     p = Point_t(i, j);
                     corner = UL_CORNER;
@@ -164,9 +167,61 @@ std::pair<Point_t,int> find_nearest_blank(const int distance[MAP_WIDTH+1][MAP_HE
                     corner = LL_CORNER;
                 }
             }
+            ret_size = BlankSize[i][j]; 
         }
     fprintf(stderr, "%s: (%d,%d) dir:%d\n", __func__, p.x, p.y, corner);
-    return std::make_pair(p, corner);
+    ret_cor = corner;
+    return p;
+}
+
+bool blankSizeVst[MAP_WIDTH][MAP_HEIGHT];
+int getLargestBlankSize()
+{
+    int ret = 0;
+    for(int i=0; i<MAP_WIDTH; i++)
+        for(int j=0; j<MAP_HEIGHT; j++)
+            if(BlankSize[i][j] > ret)
+                ret = BlankSize[i][j];
+    return ret;
+}
+int cntBlank(int x, int y)
+{
+    if(x<0 || y<0 || x>=MAP_WIDTH || y>=MAP_HEIGHT || blankSizeVst[x][y] || LandOwner[x][y]!=LAND_NO_OWNER)
+        return 0;
+    blankSizeVst[x][y] = 1;
+    int ret = 1;
+    for(int i=0; i<4; i++)
+        ret += cntBlank(x+DELTA[i][0], y+DELTA[i][1]);
+    return ret;
+}
+void doUpdatingBlank(int x, int y, int val)
+{
+    if(x<0 || y<0 || x>=MAP_WIDTH || y>=MAP_HEIGHT || BlankSize[x][y]!=-1 || LandOwner[x][y]!=LAND_NO_OWNER)
+        return ;
+    BlankSize[x][y] = val;
+    for(int i=0; i<4; i++)
+        doUpdatingBlank(x+DELTA[i][0], y+DELTA[i][1], val);
+}
+void updateBlankSize()
+{
+    memset(BlankSize, -1, sizeof BlankSize);
+    memset(blankSizeVst, 0, sizeof blankSizeVst);
+    for(int i=0; i<MAP_WIDTH; i++)
+        for(int j=0; j<MAP_HEIGHT; j++){
+            if(LandOwner[i][j] == LAND_NO_OWNER){
+                int cnt = cntBlank(i,j);
+                doUpdatingBlank(i,j,cnt);
+            }else{
+                BlankSize[i][j]=0;
+            }
+        }
+    // fprintf(stderr, "%s\n", "=====BlankSize=====");
+    // for(int i=0; i<MAP_HEIGHT; i++){
+    //     for(int j=0; j<MAP_WIDTH; j++){
+    //         fprintf(stderr, "%d, ", BlankSize[j][i]);
+    //     }
+    //     fprintf(stderr, "\n");
+    // }
 }
 
 void init_map()
@@ -297,6 +352,7 @@ void update_map(const BotsInfo_t &info)
     }
     doEnclose();
     drawDistanceMap(info);
+    updateBlankSize();
 }
 
 bool onTheTrack(const Point_t &p, int who)
