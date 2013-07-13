@@ -52,7 +52,7 @@ int calc_next_step(const Point_t &dest,
 //从某个点开始,按某方向走一步后所在的点
 Point_t getNextPoint(const Point_t &st, int Dir)
 {
-    Point_t next;
+    Point_t next = st;
     for(int i=0; i<4; i++)
         if(DELTA_NAME[i]==Dir)
             next = Point_t(st.x+DELTA[i][0], st.y+DELTA[i][1]);
@@ -135,6 +135,37 @@ Point_t chooseEscDest(int esc_dist[MAP_WIDTH+1][MAP_HEIGHT+1])
         }
     }
     return ret;
+}
+void getUncrowded(Point_t &p, int dist[MAP_WIDTH+1][MAP_HEIGHT+1])
+{
+    int (*DM)[MAP_HEIGHT+1] = get_distance_map(), n=0, best=0x2f2f2f2f;
+    std::pair<int, std::pair<int,int> > vals[MAX_VERTICES];
+    for(int i=0; i<=MAP_WIDTH; i++)
+        for(int j=0; j<=MAP_HEIGHT; j++) {
+            vals[n++]=std::make_pair(DM[i][j], std::make_pair(i,j));
+        }
+    std::sort(vals, vals+n);
+    for(int i=0; i<=(n/10); i++) {
+        int x = vals[i].second.first;
+        int y = vals[i].second.second;
+        if(best>dist[x][y] || best==dist[x][y] && (rand()&1)){
+            best=dist[x][y];
+            p.x = x;
+            p.y = y;
+        }
+    }
+    fprintf(stderr, "%s: (%d,%d) val=%d\n", __func__, p.x, p.y, DM[p.x][p.y]);
+}
+bool uncrowdedEnough(const Point_t &p)
+{
+    int (*DM)[MAP_HEIGHT+1] = get_distance_map();
+    int val = DM[p.x][p.y], cnt=0;
+    for(int i=0; i<=MAP_WIDTH; i++)
+        for(int j=0; j<=MAP_HEIGHT; j++) 
+            if(DM[i][j] < val)
+                cnt++;
+    return (cnt <= MAX_VERTICES/9);
+    // return val < 30;
 }
 int ClockwiseTurn(int dir)
 {

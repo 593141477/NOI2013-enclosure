@@ -90,6 +90,46 @@ void BfsSearch(int x, int y, int player,
     }
 }
 
+//各个点的受威胁程度高低,值越大越威胁
+int enemyDistanceMap[MAP_WIDTH+1][MAP_HEIGHT+1];
+int (*get_distance_map())[MAP_HEIGHT+1]
+{
+    return enemyDistanceMap;
+}
+void debug_print_dm()
+{
+    fprintf(stderr, "======enemyDistanceMap======\n");
+    for(int i=0; i<=MAP_HEIGHT; i++){
+        for(int j=0; j<=MAP_WIDTH; j++) {
+            fprintf(stderr, "%d, ", enemyDistanceMap[j][i]);
+        }
+        fprintf(stderr, "\n");
+    }
+}
+inline int square(int x)
+{
+    return x*x*x;
+}
+void drawDistanceMap(const BotsInfo_t &info)
+{
+    memset(enemyDistanceMap, 0, sizeof enemyDistanceMap);
+    for(int x=0; x<=MAP_WIDTH; x++)
+        for(int y=0; y<=MAP_HEIGHT; y++) {
+            Point_t pt(x,y);
+            for(int i=0; i<NUM_PLAYERS; i++){
+                if(info.status[i]==BOT_DEAD || info.MyID==i)
+                    continue;
+
+                enemyDistanceMap[x][y] = std::max(
+                    enemyDistanceMap[x][y],
+                    square(20 - pt.dist(info.pos[i]))
+                );
+                // enemyDistanceMap[x][y] += square(20 - pt.dist(info.pos[i]));
+            }
+        }
+    // debug_print_dm();
+}
+
 bool inline smaller_and_update(int &a, const int b)
 {
     if(b < a){
@@ -256,6 +296,7 @@ void update_map(const BotsInfo_t &info)
         }
     }
     doEnclose();
+    drawDistanceMap(info);
 }
 
 bool onTheTrack(const Point_t &p, int who)

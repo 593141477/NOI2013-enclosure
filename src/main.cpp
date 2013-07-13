@@ -53,7 +53,7 @@ int main()
     Point_t startPoint, lastPoint;
     int lastDir, step_count=0;
 
-    int state = STATE_FIND_LAND;
+    int state = STATE_FIND_UNCROWDED;
 
     std::cin >> tmp >> MyBotId;
 
@@ -95,7 +95,7 @@ int main()
                     }else{
                         output_dir = aclk;
                     }
-                    if(step_count > 3){
+                    if(step_count > 2){
                         if(canGoInto(MyPosNow, clk))
                             output_dir = clk;
                         else if(canGoInto(MyPosNow, aclk))
@@ -152,6 +152,19 @@ int main()
 
                     if(onTheTrack(getNextPoint(MyPosNow, output_dir), MyBotId)) 
                         state = STATE_FIND_LAND;
+                }
+                break;
+
+                case STATE_FIND_UNCROWDED:
+                {
+                    Point_t tmp;
+                    getUncrowded(tmp, distance);
+                    output_dir = calc_next_step(tmp, distance, MyBotId);
+                    // fprintf(stderr, "%s %d\n", "STATE_FIND_UNCROWDED", output_dir);
+                    if(uncrowdedEnough(getNextPoint(MyPosNow, output_dir))){
+                        state = STATE_FIND_LAND;
+                        fprintf(stderr, "%s\n", "in uncrowded area now");
+                    }
                 }
                 break;
             }

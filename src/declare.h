@@ -30,6 +30,9 @@ struct Point_t
     bool OutOfBounds() const{
         return x<0 || y<0 || x>MAP_WIDTH || y>MAP_HEIGHT;
     }
+    int dist(const Point_t &b)const{
+        return std::abs(b.x-x) + std::abs(b.y-y);
+    }
 };
 struct BotsInfo_t
 {
@@ -56,6 +59,7 @@ void BfsSearch(int x, int y, int player, int distance[MAP_WIDTH+1][MAP_HEIGHT+1]
 int getEdgeOwner(const Point_t &st, const Point_t &ed);
 bool inline smaller_and_update(int &a, const int b);
 std::pair<Point_t,int> find_nearest_blank(const int distance[MAP_WIDTH+1][MAP_HEIGHT+1]);
+int (*get_distance_map())[MAP_HEIGHT+1];
 void debug_print_land();
 
 int calc_next_step(const Point_t &dest, int distance[MAP_WIDTH+1][MAP_HEIGHT+1], int player, Point_t lastPt = Point_t(-1,-1));
@@ -65,3 +69,5 @@ Point_t getNextPoint(const Point_t &st, int Dir);
 bool canGoInto(const Point_t &pos, int Dir);
 bool inDangerNow(const Point_t &start);
 Point_t chooseEscDest(int esc_dist[MAP_WIDTH+1][MAP_HEIGHT+1]);
+void getUncrowded(Point_t &p, int dist[MAP_WIDTH+1][MAP_HEIGHT+1]);
+bool uncrowdedEnough(const Point_t &p);
