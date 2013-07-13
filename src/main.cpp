@@ -110,6 +110,21 @@ int main()
                     }else if(inDangerNow(startPoint)){
                         fprintf(stderr, "%s\n", "start escaping...");
                         state = STATE_ESCAPE;
+                    }else{
+                        //attack
+                        for (int i = 0; i < NUM_PLAYERS; ++i){
+                            if(i==MyBotId || Bots.status[i]==BOT_DEAD)
+                                continue;
+                            for(int j=0; j<4; j++){
+                                Point_t target(MyPosNow.x+DELTA[j][0], MyPosNow.y+DELTA[j][1]);
+                                if(!target.OutOfBounds() && onTheTrack(target, i) && canGoInto(MyPosNow, DELTA_NAME[j])){
+                                    output_dir = DELTA_NAME[j];
+                                    fprintf(stderr, "%s\n", "attack");
+                                    goto attack;
+                                }
+                            }
+                        }
+                    attack:;
                     }
                 }
                 break;
@@ -160,7 +175,7 @@ int main()
                     int esc_dist[MAP_WIDTH+1][MAP_HEIGHT+1];
                     Point_t dest = chooseEscDest(esc_dist);
                     fprintf(stderr, "escaping dest: (%d,%d)\n", dest.x, dest.y);
-                    output_dir = calc_next_step(dest, esc_dist, MyBotId, lastPoint);
+                    output_dir = calc_next_step(dest, esc_dist, LAND_NO_OWNER, lastPoint);
 
                     if(onTheTrack(getNextPoint(MyPosNow, output_dir), MyBotId)) 
                         state = STATE_FIND_LAND;
