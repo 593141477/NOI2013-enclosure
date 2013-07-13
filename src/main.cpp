@@ -120,6 +120,16 @@ int main()
                     Pair = find_nearest_blank(distance);
                     Point_t p = Pair.first;
                     if(p == MyPosNow){
+                        int nearest = 0x2f2f2f2f;
+                        for(int i=0; i<NUM_PLAYERS; i++){
+                            if(i==MyBotId || Bots.status[i]==BOT_DEAD)
+                                continue;
+                            smaller_and_update(nearest, MyPosNow.dist(Bots.pos[i]));
+                        }
+                        if(nearest < 4){
+                            state = STATE_FIND_UNCROWDED;
+                            break;
+                        }
                         //根据起点位置确定顺时针转的起始方向
                         switch(Pair.second){
                             case UL_CORNER:
