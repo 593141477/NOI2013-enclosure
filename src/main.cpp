@@ -11,7 +11,9 @@ void init_program(int entropy)
 
 void output_init_pos()
 {
-    std::cout << "[POS] " << rand()%(MAP_WIDTH+1) << ' ' << rand()%(MAP_HEIGHT+1) << std::endl;
+    std::cout << "[POS] " << 
+        rand()%(MAP_WIDTH/4)+MAP_WIDTH/2 << ' ' << 
+        rand()%(MAP_HEIGHT/4)+MAP_HEIGHT/2 << std::endl;
 }
 void read_situation(BotsInfo_t &Bots)
 {
