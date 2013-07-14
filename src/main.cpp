@@ -2,6 +2,19 @@
 #include <cstdio>
 #include <cstdlib>
 
+int my_rand()
+{
+    static unsigned int seed = 19921234;
+    return (seed = seed * 1103515245 + 12345) & ((1<<16)-1);
+}
+void debug_print_time_usage()
+{
+    static unsigned long long last_stamp = 0;
+    unsigned long long now = clock();
+    fprintf(stderr, "%s: %f\n","time usage", (now-last_stamp)/(float)CLOCKS_PER_SEC);
+    last_stamp = now;
+}
+
 void init_program(int entropy)
 {
     srand((time(0)^1995) + entropy);
@@ -12,8 +25,8 @@ void init_program(int entropy)
 void output_init_pos()
 {
     std::cout << "[POS] " << 
-        rand()%(MAP_WIDTH/4)+MAP_WIDTH/2 << ' ' << 
-        rand()%(MAP_HEIGHT/4)+MAP_HEIGHT/2 << std::endl;
+        my_rand()%(MAP_WIDTH/4)+MAP_WIDTH/2 << ' ' << 
+        my_rand()%(MAP_HEIGHT/4)+MAP_HEIGHT/2 << std::endl;
 }
 void read_situation(BotsInfo_t &Bots)
 {
@@ -206,6 +219,7 @@ int main()
 
         // debug_print_land();
         std::cout << "[ACTION] " << output_dir << ' ' << output_action << std::endl;
+        debug_print_time_usage();
     }
 
     return 0;

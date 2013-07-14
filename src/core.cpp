@@ -37,7 +37,7 @@ int calc_next_step(const Point_t &dest,
             assert(0);
         }
         //随机选择一条可行路径
-        const std::pair<Point_t,int> &Pair = acceptable[rand() % acceptable.size()];
+        const std::pair<Point_t,int> &Pair = acceptable[my_rand() % acceptable.size()];
         const Point_t &pt = Pair.first;
         fprintf(stderr, "%s: from (%d,%d) to (%d,%d)\n", __func__,
             x, y, pt.x, pt.y);
@@ -148,7 +148,7 @@ void getUncrowded(Point_t &p, int dist[MAP_WIDTH+1][MAP_HEIGHT+1])
     for(int i=0; i<=(n/10); i++) {
         int x = vals[i].second.first;
         int y = vals[i].second.second;
-        if(best>dist[x][y] || best==dist[x][y] && (rand()&1)){
+        if(best>dist[x][y] || best==dist[x][y] && (my_rand()&1)){
             best=dist[x][y];
             p.x = x;
             p.y = y;

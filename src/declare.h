@@ -48,6 +48,8 @@ struct Trap_t
     int x,y,left;
 };
 
+int my_rand();
+
 const BotsInfo_t& get_bots_info();
 
 void init_map();
