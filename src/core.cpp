@@ -108,10 +108,12 @@ bool inDangerNow(const Point_t &start)
             LAND_NO_OWNER, dist, track[length-2]);
     int nearest = NearestEnemyDist(bots, track);
     int remaining = dist[start.x][start.y];
+    for(int i=length-2; i>=0; i--)
+        smaller_and_update(remaining, dist[track[i].x][track[i].y]);
 
     dbgprint(stderr, "%s: nearest=%d remaining=%d\n", __func__, nearest, remaining);
 
-    return nearest < remaining;
+    return nearest <= remaining;
 }
 Point_t chooseEscDest(int esc_dist[MAP_WIDTH+1][MAP_HEIGHT+1])
 {
