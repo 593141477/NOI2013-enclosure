@@ -112,18 +112,16 @@ int main()
                     step_count++;
                     int clk = ClockwiseTurn(lastDir);
                     int aclk = AntiClockwiseTurn(lastDir);
-                    if(canGoInto(MyPosNow, lastDir)) {
+                    //优先选择右转,画螺旋形线
+                    if(canGoInto(MyPosNow, clk) && !onTheTrack(getNextPoint(MyPosNow, clk), MyBotId)){
+                        output_dir = clk;
+                    }else if(canGoInto(MyPosNow, lastDir)) {
                         output_dir = lastDir;
-                    }else if(canGoInto(MyPosNow, clk)){
+                    }else if(canGoInto(MyPosNow, clk)) {
+                        //不得不闭合轨迹了
                         output_dir = clk;
                     }else{
                         output_dir = aclk;
-                    }
-                    if(step_count > 2){
-                        if(canGoInto(MyPosNow, clk))
-                            output_dir = clk;
-                        else if(canGoInto(MyPosNow, aclk))
-                            output_dir = aclk;
                     }
                     if(output_dir != lastDir)
                         step_count = 0;
