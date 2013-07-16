@@ -1,6 +1,12 @@
 #include <algorithm>
 #include <vector>
 
+#ifdef DEBUG_BOT
+#define dbgprint fprintf
+#else
+#define dbgprint (void)
+#endif
+
 #define MAP_WIDTH    10
 #define MAP_HEIGHT   10
 #define MAX_VERTICES ((MAP_WIDTH+1)*(MAP_HEIGHT+1))

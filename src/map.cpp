@@ -52,7 +52,7 @@ int getEdgeOwner(const Point_t &st, const Point_t &ed)
             return LAND_NO_OWNER;
         return LandOwner[dx][dy];
     }
-    fprintf(stderr, "not vertical or horizontal\n");
+    dbgprint(stderr, "not vertical or horizontal\n");
     assert(0);
 }
 
@@ -83,7 +83,7 @@ void BfsSearch(int x, int y, int player,
                 continue;
             int owner = getEdgeOwner(v, t);
             if(owner!=LAND_NO_OWNER && owner!=player){
-                // fprintf(stderr, "can't go from (%d,%d) to (%d,%d)\n", v.x, v.y, tx, ty);
+                // dbgprint(stderr, "can't go from (%d,%d) to (%d,%d)\n", v.x, v.y, tx, ty);
                 continue;
             }
             bfs_vst[tx][ty]  = 1;
@@ -101,12 +101,12 @@ int (*get_distance_map())[MAP_HEIGHT+1]
 }
 void debug_print_dm()
 {
-    fprintf(stderr, "======enemyDistanceMap======\n");
+    dbgprint(stderr, "======enemyDistanceMap======\n");
     for(int i=0; i<=MAP_HEIGHT; i++){
         for(int j=0; j<=MAP_WIDTH; j++) {
-            fprintf(stderr, "%d, ", enemyDistanceMap[j][i]);
+            dbgprint(stderr, "%d, ", enemyDistanceMap[j][i]);
         }
-        fprintf(stderr, "\n");
+        dbgprint(stderr, "\n");
     }
 }
 inline int square(int x)
@@ -169,7 +169,7 @@ Point_t find_nearest_blank(const int distance[MAP_WIDTH+1][MAP_HEIGHT+1], int &r
             }
             ret_size = BlankSize[i][j]; 
         }
-    fprintf(stderr, "%s: (%d,%d) dir:%d\n", __func__, p.x, p.y, corner);
+    dbgprint(stderr, "%s: (%d,%d) dir:%d\n", __func__, p.x, p.y, corner);
     ret_cor = corner;
     return p;
 }
@@ -215,12 +215,12 @@ void updateBlankSize()
                 BlankSize[i][j]=0;
             }
         }
-    // fprintf(stderr, "%s\n", "=====BlankSize=====");
+    // dbgprint(stderr, "%s\n", "=====BlankSize=====");
     // for(int i=0; i<MAP_HEIGHT; i++){
     //     for(int j=0; j<MAP_WIDTH; j++){
-    //         fprintf(stderr, "%d, ", BlankSize[j][i]);
+    //         dbgprint(stderr, "%d, ", BlankSize[j][i]);
     //     }
-    //     fprintf(stderr, "\n");
+    //     dbgprint(stderr, "\n");
     // }
 }
 
@@ -260,10 +260,10 @@ void addEnclosure(const std::vector<Point_t>::iterator &start,
     std::vector<std::pair<int,int> > vt_lines;
     std::vector<Point_t>::iterator last, i;
 
-    // fprintf(stderr, "%s\n", "addEnclosure: ");
+    // dbgprint(stderr, "%s\n", "addEnclosure: ");
     // for(i=start; i!=end; i++)
-    //  fprintf(stderr, "(%d,%d)", i->x, i->y);
-    // fprintf(stderr, "\n");
+    //  dbgprint(stderr, "(%d,%d)", i->x, i->y);
+    // dbgprint(stderr, "\n");
 
     last = i = start;
     for(++i; i!=end; ++i,++last) {
@@ -279,10 +279,10 @@ void addEnclosure(const std::vector<Point_t>::iterator &start,
     enclosure_t tmp;
     int len = vt_lines.size();
     // if(len){
-    //  fprintf(stderr, "%s\n", "vt_lines: ");
+    //  dbgprint(stderr, "%s\n", "vt_lines: ");
     //  for(int i=0; i<len; i++)
-    //      fprintf(stderr, "(%d, %d)\n", vt_lines[i].second, vt_lines[i].first);
-    //  fprintf(stderr, "\n" );
+    //      dbgprint(stderr, "(%d, %d)\n", vt_lines[i].second, vt_lines[i].first);
+    //  dbgprint(stderr, "\n" );
     // }
     for(int i=0; i<len; i+=2) {
         for(int j=vt_lines[i].second; j<vt_lines[i+1].second; j++){
@@ -368,19 +368,19 @@ const std::vector<Point_t>& getTrack(int who)
 
 void debug_print_land()
 {
-    // fprintf(stderr, "======LandID======\n");
+    // dbgprint(stderr, "======LandID======\n");
     // for(int i=0; i<MAP_HEIGHT; i++){
     //  for(int j=0; j<MAP_WIDTH; j++) {
-    //      fprintf(stderr, "%02d, ", LandID[j][i]);
+    //      dbgprint(stderr, "%02d, ", LandID[j][i]);
     //  }
-    //  fprintf(stderr, "\n");
+    //  dbgprint(stderr, "\n");
     // }
-    fprintf(stderr, "======LandOwner======\n");
+    dbgprint(stderr, "======LandOwner======\n");
     for(int i=0; i<MAP_HEIGHT; i++){
         for(int j=0; j<MAP_WIDTH; j++) {
-            fprintf(stderr, "%02d, ", LandOwner[j][i]);
+            dbgprint(stderr, "%02d, ", LandOwner[j][i]);
         }
-        fprintf(stderr, "\n");
+        dbgprint(stderr, "\n");
     }
 }
 

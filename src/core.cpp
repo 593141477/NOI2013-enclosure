@@ -33,13 +33,13 @@ int calc_next_step(const Point_t &dest,
             }
         }
         if(acceptable.empty()){
-            fprintf(stderr, "%s\n", "no way to go");
+            dbgprint(stderr, "%s\n", "no way to go");
             assert(0);
         }
         //随机选择一条可行路径
         const std::pair<Point_t,int> &Pair = acceptable[my_rand() % acceptable.size()];
         const Point_t &pt = Pair.first;
-        fprintf(stderr, "%s: from (%d,%d) to (%d,%d)\n", __func__,
+        dbgprint(stderr, "%s: from (%d,%d) to (%d,%d)\n", __func__,
             x, y, pt.x, pt.y);
         if(!distance[pt.x][pt.y]){
             ret = Pair.second;
@@ -109,7 +109,7 @@ bool inDangerNow(const Point_t &start)
     int nearest = NearestEnemyDist(bots, track);
     int remaining = dist[start.x][start.y];
 
-    fprintf(stderr, "%s: nearest=%d remaining=%d\n", __func__, nearest, remaining);
+    dbgprint(stderr, "%s: nearest=%d remaining=%d\n", __func__, nearest, remaining);
 
     return nearest < remaining;
 }
@@ -128,7 +128,7 @@ Point_t chooseEscDest(int esc_dist[MAP_WIDTH+1][MAP_HEIGHT+1])
             it != track.end(); ++it) {
         int d = esc_dist[it->x][it->y];
         if(d!=0 && smaller_and_update(shortest, d)) {
-            fprintf(stderr, "%s: nearest=%d shortest=%d\n", __func__, nearest, shortest);
+            dbgprint(stderr, "%s: nearest=%d shortest=%d\n", __func__, nearest, shortest);
             ret = *it;
             if(shortest <= nearest)
                 break;
@@ -154,7 +154,7 @@ void getUncrowded(Point_t &p, int dist[MAP_WIDTH+1][MAP_HEIGHT+1])
             p.y = y;
         }
     }
-    fprintf(stderr, "%s: (%d,%d) val=%d\n", __func__, p.x, p.y, DM[p.x][p.y]);
+    dbgprint(stderr, "%s: (%d,%d) val=%d\n", __func__, p.x, p.y, DM[p.x][p.y]);
 }
 bool uncrowdedEnough(const Point_t &p)
 {
@@ -189,7 +189,7 @@ int ClockwiseTurn(int dir)
 
         default:
         ret = DIR_STOP;
-        fprintf(stderr, "%s unknown dir\n", __func__);
+        dbgprint(stderr, "%s unknown dir\n", __func__);
     }
     return ret;
 }
@@ -215,7 +215,7 @@ int AntiClockwiseTurn(int dir)
 
         default:
         ret = DIR_STOP;
-        fprintf(stderr, "%s unknown dir\n", __func__);
+        dbgprint(stderr, "%s unknown dir\n", __func__);
     }
     return ret;
 }

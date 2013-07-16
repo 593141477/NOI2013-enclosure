@@ -1,17 +1,23 @@
 #include <iostream>
 #include <cstdio>
 #include <cstdlib>
+#include <ctime>
 
 int my_rand()
 {
-    static unsigned int seed = 19921234;
-    return (seed = seed * 1103515245 + 12345) & ((1<<16)-1);
+#ifdef DEBUG_NO_RAND
+    // static unsigned int seed = 19921234;
+    // return (seed = seed * 1103515245 + 12345) & ((1<<16)-1);
+    return 0;
+#else
+    return rand();
+#endif
 }
 void debug_print_time_usage()
 {
     static unsigned long long last_stamp = 0;
     unsigned long long now = clock();
-    fprintf(stderr, "%s: %f\n","time usage", (now-last_stamp)/(float)CLOCKS_PER_SEC);
+    dbgprint(stderr, "%s: %f\n","time usage", (now-last_stamp)/(float)CLOCKS_PER_SEC);
     last_stamp = now;
 }
 
@@ -28,28 +34,30 @@ void output_init_pos()
         my_rand()%(MAP_WIDTH/4)+MAP_WIDTH/2 << ' ' << 
         my_rand()%(MAP_HEIGHT/4)+MAP_HEIGHT/2 << std::endl;
 }
-void read_situation(BotsInfo_t &Bots)
+bool read_situation(BotsInfo_t &Bots)
 {
     std::string tmp;
-    std::cin >> tmp;
+    if(!(std::cin >> tmp))
+        return false;
     for(int i=0; i<NUM_PLAYERS; i++) {
         Bots.last_pos[i] = Bots.pos[i];
         std::cin >> Bots.pos[i].x >> Bots.pos[i].y;
         std::cin >> Bots.status[i] >> Bots.trapped[i] >> Bots.scoredecline[i];
     }
     read_Traps();
+    return true;
 }
 void debug_print_distance(int distance[MAP_WIDTH+1][MAP_HEIGHT+1])
 {
-    fprintf(stderr, "======distance======\n");
+    dbgprint(stderr, "======distance======\n");
     for(int i=0; i<=MAP_HEIGHT; i++){
         for(int j=0; j<=MAP_WIDTH; j++){
             if(distance[j][i] == 0x2f2f2f2f)
-                fprintf(stderr, "%s, ", "oo");
+                dbgprint(stderr, "%s, ", "oo");
             else
-                fprintf(stderr, "%02d, ", distance[j][i]);
+                dbgprint(stderr, "%02d, ", distance[j][i]);
         }
-        fprintf(stderr, "\n");
+        dbgprint(stderr, "\n");
     }
 }
 
@@ -80,7 +88,8 @@ int main()
     for(Round=1; Round<=100; Round++) {
         char output_dir;
         int output_action;
-        read_situation(Bots);
+        if(!read_situation(Bots))
+            break;
         update_map(Bots);
 
         if(Bots.trapped[MyBotId]){
@@ -121,7 +130,7 @@ int main()
                     if(onTheTrack(getNextPoint(MyPosNow, output_dir), MyBotId)) {
                         state = STATE_FIND_LAND;
                     }else if(inDangerNow(startPoint)){
-                        fprintf(stderr, "%s\n", "start escaping...");
+                        dbgprint(stderr, "%s\n", "start escaping...");
                         state = STATE_ESCAPE;
                     }else{
                         //attack
@@ -132,7 +141,7 @@ int main()
                                 Point_t target(MyPosNow.x+DELTA[j][0], MyPosNow.y+DELTA[j][1]);
                                 if(!target.OutOfBounds() && onTheTrack(target, i) && canGoInto(MyPosNow, DELTA_NAME[j])){
                                     output_dir = DELTA_NAME[j];
-                                    fprintf(stderr, "%s\n", "attack");
+                                    dbgprint(stderr, "%s\n", "attack");
                                     goto attack;
                                 }
                             }
@@ -190,7 +199,7 @@ int main()
                 {
                     int esc_dist[MAP_WIDTH+1][MAP_HEIGHT+1];
                     Point_t dest = chooseEscDest(esc_dist);
-                    fprintf(stderr, "escaping dest: (%d,%d)\n", dest.x, dest.y);
+                    dbgprint(stderr, "escaping dest: (%d,%d)\n", dest.x, dest.y);
                     output_dir = calc_next_step(dest, esc_dist, LAND_NO_OWNER, lastPoint);
 
                     if(onTheTrack(getNextPoint(MyPosNow, output_dir), MyBotId)) 
@@ -203,10 +212,10 @@ int main()
                     Point_t tmp;
                     getUncrowded(tmp, distance);
                     output_dir = calc_next_step(tmp, distance, MyBotId);
-                    // fprintf(stderr, "%s %d\n", "STATE_FIND_UNCROWDED", output_dir);
+                    // dbgprint(stderr, "%s %d\n", "STATE_FIND_UNCROWDED", output_dir);
                     if(uncrowdedEnough(getNextPoint(MyPosNow, output_dir))){
                         state = STATE_FIND_LAND;
-                        fprintf(stderr, "%s\n", "in uncrowded area now");
+                        dbgprint(stderr, "%s\n", "in uncrowded area now");
                     }
                 }
                 break;
@@ -221,6 +230,8 @@ int main()
         std::cout << "[ACTION] " << output_dir << ' ' << output_action << std::endl;
         debug_print_time_usage();
     }
+
+    dbgprint(stderr, "%s\n", "debug: exit");
 
     return 0;
 }
