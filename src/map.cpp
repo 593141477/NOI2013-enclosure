@@ -142,36 +142,79 @@ bool inline smaller_and_update(int &a, const int b)
     return false;
 }
 
+int get_max_square(int x, int y)
+{
+    int ans;
+    for(ans=0; ; ans++) {
+        int sx = x-ans, sy = y-ans;
+        int tx = x+ans, ty = y+ans;
+
+        if(sx<0 || sy<0 || tx>=MAP_WIDTH || ty>=MAP_HEIGHT)
+            break;
+        for(int i=sx; i<=tx; i++)
+            for(int j=sy; j<=ty; j++)
+                if(LandOwner[i][j]!=LAND_NO_OWNER)
+                    goto finished;
+    }
+finished:
+    // dbgprint(stderr, "%s: (%d,%d)=%d\n", __func__, x, y, ans);
+    return ans;
+}
 Point_t find_nearest_blank(const int distance[MAP_WIDTH+1][MAP_HEIGHT+1], int &ret_cor, int &ret_size, int min_size)
 {
-    int best = 0x2f2f2f2f;
-    Point_t p(0, 0);
-    int corner = UL_CORNER;
+    const int max_length=3;
+    int dists[max_length+1];
+    Point_t points[max_length+1];
+    int corners[max_length+1];
+    int sizes[max_length+1];
+
+    memset(dists, 0x2f, sizeof dists);
     for(int i=0; i<MAP_WIDTH; i++)
         for(int j=0; j<MAP_HEIGHT; j++) {
             if(LandOwner[i][j]==LAND_NO_OWNER && BlankSize[i][j]>=min_size){
+                int sp = get_max_square(i,j);
+                sp = std::min(sp, max_length);
+                //按照可扩展范围,分别得到最优解
+                Point_t &p = points[sp];
+                int &corner = corners[sp];
+                int &best = dists[sp];
+                int &size = sizes[sp];
                 if(smaller_and_update(best,distance[i][j])){ //upper left corner
                     p = Point_t(i, j);
                     corner = UL_CORNER;
+                    size = BlankSize[i][j]; 
                 }
                 if(smaller_and_update(best,distance[i+1][j+1])){ //lower right corner
                     p = Point_t(i+1, j+1);
                     corner = LR_CORNER;
+                    size = BlankSize[i][j]; 
                 }
                 if(smaller_and_update(best,distance[i+1][j])){ //upper right corner
                     p = Point_t(i+1, j);
                     corner = UR_CORNER;
+                    size = BlankSize[i][j]; 
                 }
                 if(smaller_and_update(best,distance[i][j+1])){ //lower left corner
                     p = Point_t(i, j+1);
                     corner = LL_CORNER;
+                    size = BlankSize[i][j]; 
                 }
             }
-            ret_size = BlankSize[i][j]; 
         }
-    dbgprint(stderr, "%s: (%d,%d) dir:%d\n", __func__, p.x, p.y, corner);
-    ret_cor = corner;
-    return p;
+    int shortest = * std::min_element(dists+1, dists+max_length+1);
+    for(int i=max_length; i>=1; i--){
+        if(dists[i]-shortest < 5){
+            const Point_t &p = points[i];
+            ret_size = sizes[i];
+            ret_cor = corners[i];
+            dbgprint(stderr, "%s: (%d,%d) dir:%d size:%d\n", __func__, p.x, p.y, ret_cor, ret_size);
+            return p;
+        }
+    }
+
+    dbgprint(stderr, "nothing to return in %s\n", __func__);
+    assert(0);
+    return points[0];
 }
 
 bool blankSizeVst[MAP_WIDTH][MAP_HEIGHT];
