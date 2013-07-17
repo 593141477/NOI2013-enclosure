@@ -2,6 +2,9 @@
 #include <cstdio>
 #include <cstdlib>
 #include <ctime>
+#if !defined(_WIN32) && defined(DEBUG_BOT)
+#include <unistd.h>
+#endif 
 
 int my_rand()
 {
@@ -24,6 +27,9 @@ void debug_print_time_usage()
 void init_program(int entropy)
 {
     srand((time(0)^1995) + entropy);
+#if !defined(_WIN32) && defined(DEBUG_BOT)
+    srand(rand()+getpid());
+#endif
 
     init_map();
 }
@@ -74,7 +80,7 @@ int main()
     std::string tmp;
     int distance[MAP_WIDTH+1][MAP_HEIGHT+1];
     Point_t startPoint, lastPoint;
-    int lastDir, step_count=0;
+    int lastDir;
 
     int state = STATE_FIND_UNCROWDED;
 
@@ -105,11 +111,40 @@ int main()
             output_action = ACTION_NOTHING;
             output_dir = DIR_STOP;
 
+            switch(state) {
+                case STATE_ENCLOSING:
+                {
+                    if(Bots.status[MyBotId] == BOT_NORMAL)
+                        state = STATE_FIND_LAND;
+                    else if(inDangerNow(startPoint)){
+                        dbgprint(stderr, "%s\n", "start escaping...");
+                        state = STATE_ESCAPE;
+                    }
+                }
+                break;
+                case STATE_FIND_LAND:
+                {
+
+                }
+                break;
+                case STATE_ESCAPE:
+                {
+                    if(Bots.status[MyBotId] == BOT_NORMAL)
+                        state = STATE_FIND_LAND;
+                }
+                break;
+                case STATE_FIND_UNCROWDED:
+                {
+                    if(uncrowdedEnough(MyPosNow)){
+                        state = STATE_FIND_LAND;
+                        dbgprint(stderr, "%s\n", "in uncrowded area now");
+                    }
+                }
+            }
 
             switch(state) {
                 case STATE_ENCLOSING:
                 {
-                    step_count++;
                     int clk = ClockwiseTurn(lastDir);
                     int aclk = AntiClockwiseTurn(lastDir);
                     //优先选择右转,画螺旋形线
@@ -123,14 +158,8 @@ int main()
                     }else{
                         output_dir = aclk;
                     }
-                    if(output_dir != lastDir)
-                        step_count = 0;
-                    if(onTheTrack(getNextPoint(MyPosNow, output_dir), MyBotId)) {
-                        state = STATE_FIND_LAND;
-                    }else if(inDangerNow(startPoint)){
-                        dbgprint(stderr, "%s\n", "start escaping...");
-                        state = STATE_ESCAPE;
-                    }else{
+
+                    {
                         //attack
                         for (int i = 0; i < NUM_PLAYERS; ++i){
                             if(i==MyBotId || Bots.status[i]==BOT_DEAD)
@@ -185,7 +214,6 @@ int main()
                         }
                         output_action = ACTION_DRAW;
                         state = STATE_ENCLOSING;
-                        step_count = 0;
                         startPoint = p;
                     }else{
                         output_dir = calc_next_step(p, distance, MyBotId);
@@ -199,9 +227,6 @@ int main()
                     Point_t dest = chooseEscDest(esc_dist);
                     dbgprint(stderr, "escaping dest: (%d,%d)\n", dest.x, dest.y);
                     output_dir = calc_next_step(dest, esc_dist, LAND_NO_OWNER, lastPoint);
-
-                    if(onTheTrack(getNextPoint(MyPosNow, output_dir), MyBotId)) 
-                        state = STATE_FIND_LAND;
                 }
                 break;
 
@@ -211,10 +236,6 @@ int main()
                     getUncrowded(tmp, distance);
                     output_dir = calc_next_step(tmp, distance, MyBotId);
                     // dbgprint(stderr, "%s %d\n", "STATE_FIND_UNCROWDED", output_dir);
-                    if(uncrowdedEnough(getNextPoint(MyPosNow, output_dir))){
-                        state = STATE_FIND_LAND;
-                        dbgprint(stderr, "%s\n", "in uncrowded area now");
-                    }
                 }
                 break;
             }
