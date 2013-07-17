@@ -33,7 +33,7 @@ int calc_next_step(const Point_t &dest,
             }
         }
         if(acceptable.empty()){
-            dbgprint(stderr, "%s\n", "no way to go");
+            dbgprint(stderr, "no way to go to (%d,%d)\n", dest.x, dest.y);
             assert(0);
         }
         //随机选择一条可行路径
@@ -168,6 +168,22 @@ bool uncrowdedEnough(const Point_t &p)
                 cnt++;
     return (cnt <= MAX_VERTICES/9);
     // return val < 30;
+}
+int canAttack()
+{
+    const BotsInfo_t& Bots = get_bots_info();
+    for (int i = 0; i < NUM_PLAYERS; ++i){
+        if(i==Bots.MyID || Bots.status[i]==BOT_DEAD)
+            continue;
+        for(int j=0; j<4; j++){
+            Point_t target(Bots.pos[Bots.MyID].x+DELTA[j][0], Bots.pos[Bots.MyID].y+DELTA[j][1]);
+            if(!target.OutOfBounds() && onTheTrack(target, i) && canGoInto(Bots.pos[Bots.MyID], DELTA_NAME[j])){
+                dbgprint(stderr, "%s\n", "attack");
+                return DELTA_NAME[j];
+            }
+        }
+    }
+    return -1;
 }
 int ClockwiseTurn(int dir)
 {

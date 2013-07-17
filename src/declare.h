@@ -80,3 +80,4 @@ bool inDangerNow(const Point_t &start);
 Point_t chooseEscDest(int esc_dist[MAP_WIDTH+1][MAP_HEIGHT+1]);
 void getUncrowded(Point_t &p, int dist[MAP_WIDTH+1][MAP_HEIGHT+1]);
 bool uncrowdedEnough(const Point_t &p);
+int canAttack();

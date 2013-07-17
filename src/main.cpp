@@ -159,22 +159,9 @@ int main()
                         output_dir = aclk;
                     }
 
-                    {
-                        //attack
-                        for (int i = 0; i < NUM_PLAYERS; ++i){
-                            if(i==MyBotId || Bots.status[i]==BOT_DEAD)
-                                continue;
-                            for(int j=0; j<4; j++){
-                                Point_t target(MyPosNow.x+DELTA[j][0], MyPosNow.y+DELTA[j][1]);
-                                if(!target.OutOfBounds() && onTheTrack(target, i) && canGoInto(MyPosNow, DELTA_NAME[j])){
-                                    output_dir = DELTA_NAME[j];
-                                    dbgprint(stderr, "%s\n", "attack");
-                                    goto attack;
-                                }
-                            }
-                        }
-                    attack:;
-                    }
+                    int ret = canAttack();
+                    if(ret != -1)
+                        output_dir = ret;
                 }
                 break;
 
@@ -214,6 +201,9 @@ int main()
                         startPoint = p;
                     }else{
                         output_dir = calc_next_step(p, distance, MyBotId);
+                        int ret = canAttack();
+                        if(ret != -1)
+                            output_dir = ret;
                     }
                 }
                 break;
@@ -232,6 +222,9 @@ int main()
                     Point_t tmp;
                     getUncrowded(tmp, distance);
                     output_dir = calc_next_step(tmp, distance, MyBotId);
+                    int ret = canAttack();
+                    if(ret != -1)
+                        output_dir = ret;
                     // dbgprint(stderr, "%s %d\n", "STATE_FIND_UNCROWDED", output_dir);
                 }
                 break;
