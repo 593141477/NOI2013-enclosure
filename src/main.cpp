@@ -159,6 +159,21 @@ int main()
                         output_dir = aclk;
                     }
 
+                    Point_t next = getNextPoint(MyPosNow, output_dir);
+                    if(output_dir == lastDir){
+                        //下一步所在的点不能一步收回
+                        if(!canGoInto(next, clk) || !onTheTrack(getNextPoint(next, clk), MyBotId)){
+                            if(NearestEnemyDist(Bots, getTrack(MyBotId)) <= 2){
+                                if(canGoInto(MyPosNow, clk)) {
+                                    //不得不闭合轨迹了
+                                    dbgprint(stderr, "Don't be silly\n");
+                                    output_dir = clk;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
                     int ret = canAttack();
                     if(ret != -1)
                         output_dir = ret;

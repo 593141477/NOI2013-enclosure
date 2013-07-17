@@ -76,6 +76,7 @@ int ClockwiseTurn(int dir);
 int AntiClockwiseTurn(int dir);
 Point_t getNextPoint(const Point_t &st, int Dir);
 bool canGoInto(const Point_t &pos, int Dir);
+int NearestEnemyDist(const BotsInfo_t& bots, const std::vector<Point_t> &track );
 bool inDangerNow(const Point_t &start);
 Point_t chooseEscDest(int esc_dist[MAP_WIDTH+1][MAP_HEIGHT+1]);
 void getUncrowded(Point_t &p, int dist[MAP_WIDTH+1][MAP_HEIGHT+1]);
