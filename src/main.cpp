@@ -180,12 +180,9 @@ int main()
 
                 case STATE_FIND_LAND:
                 {
-                    int corner, blank_size;
-                    Point_t p = find_nearest_blank(distance, corner, blank_size);
-                    if(blank_size < 4){
-                        int largest = getLargestBlankSize();
-                        p = find_nearest_blank(distance, corner, blank_size, largest);
-                    }
+                    std::pair<Point_t,int> ret = find_best_blank(distance);
+                    Point_t &p = ret.first;
+                    int &corner = ret.second;
                     if(p == MyPosNow){
                         int nearest = 0x2f2f2f2f;
                         for(int i=0; i<NUM_PLAYERS; i++){

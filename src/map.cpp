@@ -216,6 +216,16 @@ Point_t find_nearest_blank(const int distance[MAP_WIDTH+1][MAP_HEIGHT+1], int &r
     assert(0);
     return points[0];
 }
+std::pair<Point_t,int> find_best_blank(const int distance[MAP_WIDTH+1][MAP_HEIGHT+1])
+{
+    int corner, blank_size;
+    Point_t p = find_nearest_blank(distance, corner, blank_size, 0);
+    if(blank_size < 4){
+        int largest = getLargestBlankSize();
+        p = find_nearest_blank(distance, corner, blank_size, largest);
+    }
+    return std::make_pair(p, corner);
+}
 
 bool blankSizeVst[MAP_WIDTH][MAP_HEIGHT];
 int getLargestBlankSize()

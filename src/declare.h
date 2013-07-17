@@ -66,7 +66,7 @@ void update_map(const BotsInfo_t &);
 void BfsSearch(int x, int y, int player, int distance[MAP_WIDTH+1][MAP_HEIGHT+1], Point_t lastPt = Point_t(-1,-1));
 int getEdgeOwner(const Point_t &st, const Point_t &ed);
 bool inline smaller_and_update(int &a, const int b);
-Point_t find_nearest_blank(const int distance[MAP_WIDTH+1][MAP_HEIGHT+1], int &ret_cor, int &ret_size, int min_size=0);
+std::pair<Point_t,int> find_best_blank(const int distance[MAP_WIDTH+1][MAP_HEIGHT+1]);
 int getLargestBlankSize();
 int (*get_distance_map())[MAP_HEIGHT+1];
 void debug_print_land();
