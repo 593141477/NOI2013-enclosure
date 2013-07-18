@@ -64,6 +64,7 @@ bool onTheTrack(const Point_t &p, int who);
 const std::vector<Point_t>& getTrack(int who);
 void update_map(const BotsInfo_t &);
 void BfsSearch(int x, int y, int player, int distance[MAP_WIDTH+1][MAP_HEIGHT+1], Point_t lastPt = Point_t(-1,-1));
+int getRightSideOwner(const Point_t &st, const Point_t &ed);
 int getEdgeOwner(const Point_t &st, const Point_t &ed);
 bool inline smaller_and_update(int &a, const int b);
 std::pair<Point_t,int> find_best_blank(const int distance[MAP_WIDTH+1][MAP_HEIGHT+1]);

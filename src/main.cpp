@@ -153,11 +153,16 @@ int main()
                     //优先选择右转,画螺旋形线
                     if(canGoInto(MyPosNow, clk) && !onTheTrack(getNextPoint(MyPosNow, clk), MyBotId)){
                         output_dir = clk;
-                    }else if(canGoInto(MyPosNow, lastDir)) {
+                    }else if(canGoInto(MyPosNow, lastDir) && 
+                            //避免走冤枉路
+                            LAND_NO_OWNER==getRightSideOwner(MyPosNow, getNextPoint(MyPosNow, lastDir))
+                            ) {
                         output_dir = lastDir;
                     }else if(canGoInto(MyPosNow, clk)) {
                         //不得不闭合轨迹了
                         output_dir = clk;
+                    }else if(canGoInto(MyPosNow, lastDir)) {
+                        output_dir = lastDir;
                     }else{
                         output_dir = aclk;
                     }

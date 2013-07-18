@@ -29,6 +29,28 @@ int BlankSize[MAP_WIDTH][MAP_HEIGHT];
 //  }
 // }
 
+int getRightSideOwner(const Point_t &st, const Point_t &ed)
+{
+    if(st.x == ed.x) { //vertical
+        int rx,lx,ry,ly;
+        rx = st.x;
+        lx = rx-1;
+        ry = ly = std::min(ed.y, st.y);
+        if(lx<0 || rx>=MAP_WIDTH)
+            return LAND_NO_OWNER;
+        return st.y<ed.y ? LandID[lx][ly] : LandID[rx][ry];
+    }else if(st.y == ed.y) { //horizontal
+        int dx,dy,ux,uy;
+        dy = st.y;
+        uy = dy-1;
+        dx = ux = std::min(ed.x, st.x);
+        if(uy<0 || dy>=MAP_HEIGHT)
+            return LAND_NO_OWNER;
+        return st.x<ed.x ? LandOwner[dx][dy] : LandOwner[ux][uy];
+    }
+    dbgprint(stderr, "not vertical or horizontal\n");
+    assert(0);
+}
 int getEdgeOwner(const Point_t &st, const Point_t &ed)
 {
     if(st.x == ed.x) { //vertical
