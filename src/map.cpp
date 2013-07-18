@@ -182,6 +182,12 @@ int count_blank_blocks(int x, int y, int dir)
     }
     return cnt;
 }
+void inline population_element(int &v, int i, int j)
+{
+    const int K_POPULATION = 1400;
+    v -= enemyDistanceMap[i][j]/K_POPULATION;
+    if(v<0) v=0;
+}
 Point_t find_nearest_blank(const int distance[MAP_WIDTH+1][MAP_HEIGHT+1], int &ret_cor, int &ret_size, int min_size)
 {
     const int max_length=MAP_WIDTH*MAP_HEIGHT;
@@ -196,24 +202,28 @@ Point_t find_nearest_blank(const int distance[MAP_WIDTH+1][MAP_HEIGHT+1], int &r
             if(LandOwner[i][j]==LAND_NO_OWNER && BlankSize[i][j]>=min_size){
                 //按照可扩展范围,分别得到最优解
                 int sp = count_blank_blocks(i,j,DIR_LEFT);
+                population_element(sp, i, j);
                 if(smaller_and_update(dists[sp],distance[i][j])){ //upper left corner
                     points[sp] = Point_t(i, j);
                     corners[sp] = UL_CORNER;
                     sizes[sp] = BlankSize[i][j]; 
                 }
                 sp = count_blank_blocks(i,j,DIR_RIGHT);
+                population_element(sp, i+1, j+1);
                 if(smaller_and_update(dists[sp],distance[i+1][j+1])){ //lower right corner
                     points[sp] = Point_t(i+1, j+1);
                     corners[sp] = LR_CORNER;
                     sizes[sp] = BlankSize[i][j]; 
                 }
                 sp = count_blank_blocks(i,j,DIR_UP);
+                population_element(sp, i+1, j);
                 if(smaller_and_update(dists[sp],distance[i+1][j])){ //upper right corner
                     points[sp] = Point_t(i+1, j);
                     corners[sp] = UR_CORNER;
                     sizes[sp] = BlankSize[i][j]; 
                 }
                 sp = count_blank_blocks(i,j,DIR_DOWN);
+                population_element(sp, i, j+1);
                 if(smaller_and_update(dists[sp],distance[i][j+1])){ //lower left corner
                     points[sp] = Point_t(i, j+1);
                     corners[sp] = LL_CORNER;
