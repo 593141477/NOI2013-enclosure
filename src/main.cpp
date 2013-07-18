@@ -193,7 +193,7 @@ int main()
                             smaller_and_update(nearest, MyPosNow.dist(Bots.pos[i]));
                         }
                         if(nearest < 4){
-                            state = STATE_FIND_UNCROWDED;
+                            state = STATE_FIND_LAND;
                             break;
                         }
                         //根据起点位置确定顺时针转的起始方向
