@@ -200,8 +200,11 @@ int main()
                                 continue;
                             smaller_and_update(nearest, MyPosNow.dist(Bots.pos[i]));
                         }
-                        if(nearest < 4){
-                            state = STATE_FIND_LAND;
+                        if(nearest < (my_rand()%10<4 ? 4 : 5)){
+                            Point_t tmp;
+                            getUncrowded(tmp, distance);
+                            output_dir = calc_next_step(tmp, distance, MyBotId);
+                            state = STATE_FIND_UNCROWDED;
                             break;
                         }
                         //根据起点位置确定顺时针转的起始方向
