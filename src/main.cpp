@@ -119,7 +119,7 @@ int main()
                     else if(inDangerNow(startPoint)){
                         dbgprint(stderr, "%s\n", "start escaping...");
                         state = STATE_ESCAPE;
-                    }else if(Round == 99){ 
+                    }else if(Round == 96){ 
                         //接近最后回合直接结束圈地
                         state = STATE_ESCAPE;
                     }
