@@ -196,7 +196,7 @@ int main()
                     if(p == MyPosNow){
                         int nearest = 0x2f2f2f2f;
                         for(int i=0; i<NUM_PLAYERS; i++){
-                            if(i==MyBotId || Bots.status[i]==BOT_DEAD)
+                            if(i==MyBotId || Bots.status[i]==BOT_DEAD || Bots.status[i]==BOT_DRAWING)
                                 continue;
                             smaller_and_update(nearest, MyPosNow.dist(Bots.pos[i]));
                         }

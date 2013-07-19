@@ -62,7 +62,7 @@ bool anyBotThere(const Point_t &pt)
 {
     const BotsInfo_t& bots = get_bots_info();
     for(int i=0; i<NUM_PLAYERS; i++)
-        if(bots.status[i]!=BOT_DEAD && bots.pos[i]==pt)
+        if(bots.status[i]!=BOT_DEAD && bots.status[i]!=BOT_DRAWING && bots.pos[i]==pt)
             return true;
     return false;
 }
@@ -82,7 +82,7 @@ int NearestEnemyDist(const BotsInfo_t& bots, const std::vector<Point_t> &track )
     int shortest = 0x2f2f2f2f;
     for(int i=0; i<NUM_PLAYERS; i++)
     {
-        if(bots.status[i]==BOT_DEAD || i==bots.MyID)
+        if(bots.status[i]==BOT_DEAD || bots.status[i]==BOT_DRAWING || i==bots.MyID)
             continue;
         //得到其他bot攻击到我的距离(处于落笔态的不能穿越自己的区域)
         BfsSearch(bots.pos[i].x, bots.pos[i].y,
