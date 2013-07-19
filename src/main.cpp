@@ -182,9 +182,9 @@ int main()
                         }
                     }
 
-                    int ret = canAttack();
-                    if(ret != -1)
-                        output_dir = ret;
+                    // int ret = canAttack();
+                    // if(ret != -1)
+                    //     output_dir = ret;
                 }
                 break;
 
@@ -224,9 +224,9 @@ int main()
                         startPoint = p;
                     }else{
                         output_dir = calc_next_step(p, distance, MyBotId);
-                        int ret = canAttack();
-                        if(ret != -1)
-                            output_dir = ret;
+                        // int ret = canAttack();
+                        // if(ret != -1)
+                        //     output_dir = ret;
                     }
                 }
                 break;
@@ -245,9 +245,9 @@ int main()
                     Point_t tmp;
                     getUncrowded(tmp, distance);
                     output_dir = calc_next_step(tmp, distance, MyBotId);
-                    int ret = canAttack();
-                    if(ret != -1)
-                        output_dir = ret;
+                    // int ret = canAttack();
+                    // if(ret != -1)
+                    //     output_dir = ret;
                     // dbgprint(stderr, "%s %d\n", "STATE_FIND_UNCROWDED", output_dir);
                 }
                 break;
