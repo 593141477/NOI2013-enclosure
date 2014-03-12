@@ -34,6 +34,9 @@ void init_program(int entropy)
     init_map();
 }
 
+/*
+随机选择起始点
+*/
 void output_init_pos()
 {
     std::cout << "[POS] " << 
@@ -104,6 +107,9 @@ int main()
         }else{
             const Point_t &MyPosNow = Bots.pos[MyBotId];
 
+            /*
+            标记地图上点到我的距离
+            */
             BfsSearch(MyPosNow.x, MyPosNow.y,
                 MyBotId, distance);
             // debug_print_distance(distance);
@@ -115,8 +121,11 @@ int main()
                 case STATE_ENCLOSING:
                 {
                     if(Bots.status[MyBotId] == BOT_NORMAL)
+                        //开始寻找空地
                         state = STATE_FIND_LAND;
+
                     else if(inDangerNow(startPoint)){
+                        //发现危险，尽快结束圈地
                         dbgprint(stderr, "%s\n", "start escaping...");
                         state = STATE_ESCAPE;
                     }else if(Round == 96){ 
@@ -138,6 +147,7 @@ int main()
                 break;
                 case STATE_FIND_UNCROWDED:
                 {
+                    //如果发现足够大的空地
                     if(uncrowdedEnough(MyPosNow)){
                         state = STATE_FIND_LAND;
                         dbgprint(stderr, "%s\n", "in uncrowded area now");
@@ -148,7 +158,9 @@ int main()
             switch(state) {
                 case STATE_ENCLOSING:
                 {
+                    //计算顺时针转的位置
                     int clk = ClockwiseTurn(lastDir);
+                    //计算逆时针转的位置
                     int aclk = AntiClockwiseTurn(lastDir);
                     //优先选择右转,画螺旋形线
                     if(canGoInto(MyPosNow, clk) && !onTheTrack(getNextPoint(MyPosNow, clk), MyBotId)){
@@ -167,10 +179,12 @@ int main()
                         output_dir = aclk;
                     }
 
+                    //根据决策的方向，计算下一点的位置
                     Point_t next = getNextPoint(MyPosNow, output_dir);
                     if(output_dir == lastDir){
                         //下一步所在的点不能一步收回
                         if(!canGoInto(next, clk) || !onTheTrack(getNextPoint(next, clk), MyBotId)){
+                            //判断最近的敌人能否构成威胁
                             if(NearestEnemyDist(Bots, getTrack(MyBotId)) <= 2){
                                 if(canGoInto(MyPosNow, clk)) {
                                     //不得不闭合轨迹了
@@ -200,6 +214,7 @@ int main()
                                 continue;
                             smaller_and_update(nearest, MyPosNow.dist(Bots.pos[i]));
                         }
+                        //最近的敌人超过阈值，向空地走
                         if(nearest < (my_rand()%10<4 ? 4 : 5)){
                             Point_t tmp;
                             getUncrowded(tmp, distance);

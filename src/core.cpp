@@ -76,6 +76,7 @@ bool canGoInto(const Point_t &pos, int Dir)
     int o = getEdgeOwner(pos, next);
     return (o==LAND_NO_OWNER);
 }
+//找到能攻击我的最近的敌人
 int NearestEnemyDist(const BotsInfo_t& bots, const std::vector<Point_t> &track )
 {
     int dist[MAP_WIDTH+1][MAP_HEIGHT+1];
@@ -95,6 +96,7 @@ int NearestEnemyDist(const BotsInfo_t& bots, const std::vector<Point_t> &track )
     }
     return shortest;
 }
+//比较最近的敌人和我落笔的距离，判断当前是否处于危险状态
 bool inDangerNow(const Point_t &start)
 {
     const BotsInfo_t& bots = get_bots_info();
@@ -115,6 +117,7 @@ bool inDangerNow(const Point_t &start)
 
     return nearest <= remaining;
 }
+//寻找一个合适的落笔地点
 Point_t chooseEscDest(int esc_dist[MAP_WIDTH+1][MAP_HEIGHT+1])
 {
     const BotsInfo_t& bots = get_bots_info();
@@ -138,6 +141,7 @@ Point_t chooseEscDest(int esc_dist[MAP_WIDTH+1][MAP_HEIGHT+1])
     }
     return ret;
 }
+//根据敌人分布的密度图，寻找空地
 void getUncrowded(Point_t &p, int dist[MAP_WIDTH+1][MAP_HEIGHT+1])
 {
     int (*DM)[MAP_HEIGHT+1] = get_distance_map(), n=0, best=0x2f2f2f2f;
@@ -158,6 +162,7 @@ void getUncrowded(Point_t &p, int dist[MAP_WIDTH+1][MAP_HEIGHT+1])
     }
     dbgprint(stderr, "%s: (%d,%d) val=%d\n", __func__, p.x, p.y, DM[p.x][p.y]);
 }
+//判断是否达到空地
 bool uncrowdedEnough(const Point_t &p)
 {
     int (*DM)[MAP_HEIGHT+1] = get_distance_map();
@@ -169,6 +174,7 @@ bool uncrowdedEnough(const Point_t &p)
     return (cnt <= MAX_VERTICES/9);
     // return val < 30;
 }
+//检测能否攻击敌人
 int canAttack()
 {
     const BotsInfo_t& Bots = get_bots_info();
@@ -185,6 +191,7 @@ int canAttack()
     }
     return -1;
 }
+//计算顺时针转的位置
 int ClockwiseTurn(int dir)
 {
     int ret;
@@ -211,6 +218,7 @@ int ClockwiseTurn(int dir)
     }
     return ret;
 }
+//计算逆时针转的位置
 int AntiClockwiseTurn(int dir)
 {
     int ret;
